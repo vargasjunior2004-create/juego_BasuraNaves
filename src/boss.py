@@ -6,6 +6,7 @@ class Boss:
 
     def __init__(self, nivel):
         self.nivel = nivel
+        self.tipo = 1
 
         img = pygame.image.load(
             "assets/PNG/Sprites/Ships/spaceShips_005.png"

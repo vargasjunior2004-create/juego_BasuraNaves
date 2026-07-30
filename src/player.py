@@ -22,8 +22,20 @@ class Player:
         self.tiempo_inicio_poder = 0
         self.duracion_poder = 8000
 
+        self.habilidad_tipo = 0
+        self.habilidad_activa = False
+        self.tiempo_habilidad = 0
+        self.duracion_habilidad = 300
+
     def get_rect(self):
         return self.rect.inflate(-10, -10)
+
+    def get_beam_rect(self):
+        if not self.habilidad_activa or self.habilidad_tipo != 1:
+            return None
+        return pygame.Rect(
+            self.rect.centerx - 14, 0, 28, self.rect.top
+        )
 
     def update(self, teclas, ahora):
         if teclas[pygame.K_LEFT] or teclas[pygame.K_a]:
