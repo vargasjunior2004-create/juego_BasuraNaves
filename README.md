@@ -1,4 +1,4 @@
-# Sky Warriors ✈️
+# Sky Warriors
 
 **Shoot 'em up vertical 2D** desarrollado en Python con Pygame.
 
@@ -19,11 +19,13 @@ Proyecto académico de la carrera **Técnico Superior en Sistemas Informáticos*
 - Disparo automático con cooldown fijo
 - Enemigos que descienden y disparan
 - Power-ups: vida extra, triple disparo, puntos bonus
-- Jefes cada 5000 puntos con ataque especial (rayo de plasma)
+- **4 jefes** en rotación cada 5000 puntos
 - Dificultad progresiva
 - Sistema de vida con barra de salud
 - Puntuación y pantalla de Game Over
-- Sprites pixel art (Kenney Asset Pack)
+- Sprites pixel art (Kenney Asset Pack + Alien UFO Pack)
+- **Sonidos procedurales** generados con `wave` y `struct`
+- **3 habilidades especiales** que se aprenden al derrotar cada jefe
 
 ---
 
@@ -52,12 +54,15 @@ python main.py
 
 ## Controles
 
-| Tecla     | Acción         |
-|-----------|----------------|
-| ← / A     | Mover izquierda |
-| → / D     | Mover derecha   |
-| ↑ / W     | Mover arriba    |
-| ↓ / S     | Mover abajo     |
+| Tecla     | Acción           |
+|-----------|------------------|
+| ← / A     | Mover izquierda  |
+| → / D     | Mover derecha    |
+| ↑ / W     | Mover arriba     |
+| ↓ / S     | Mover abajo      |
+| E         | Habilidad 1: Rayo |
+| B         | Habilidad 2: Bomba guiada |
+| R         | Habilidad 3: Naves aliadas |
 | ESPACIO   | Reiniciar (Game Over) |
 
 El disparo es **automático** — no necesita botón.
@@ -76,12 +81,20 @@ El disparo es **automático** — no necesita botón.
 - Velocidad y cadencia de disparo variables
 - Dificultad aumenta con la puntuación
 
-### Jefe
-- Aparece cada **5000 puntos**
-- 20 HP × nivel del jefe
-- Escudo protector los primeros 1.5 segundos
-- Ataques: ráfaga triple + rayo de plasma (cada 4 ataques)
-- Durante el rayo, el jefe sigue al jugador
+### Jefes (rotación cada 5000 pts)
+1. **Boss** — Nave roja, ráfaga triple + rayo de plasma
+2. **Boss2** — Bólido de fuego, disparo en abanico + bola de energía
+3. **Boss3** — Comandante alienígena, ráfaga burst + invoca AlienDrones
+4. **Gravion** — Entidad gravitacional, asteroides orbitales + colapso gravitacional
+
+### Habilidades del jugador
+Se obtienen al derrotar a cada jefe. Se recargan cada 2000 puntos.
+
+| Tecla | Habilidad    | Efecto |
+|-------|-------------|--------|
+| E     | Rayo         | Barrera continua que destruye enemigos al contacto |
+| B     | Bomba guiada | Proyectil teledirigido que persigue al enemigo más cercano |
+| R     | Naves aliadas | Spawnea 2-3 naves kamikaze que persiguen y chocan contra enemigos |
 
 ### Power-ups
 | Tipo  | Color   | Efecto              |
@@ -97,25 +110,34 @@ El disparo es **automático** — no necesita botón.
 ```
 juegoAvion_pyton/
 ├── assets/
-│   ├── PNG/Sprites/       # Sprites del Kenney Pack
-│   │   ├── Ships/         # Naves (jugador, enemigos, jefe)
-│   │   ├── Missiles/      # Balas
-│   │   ├── Effects/       # Explosiones
-│   │   └── ...            # Otros sprites del pack
-│   └── License.txt        # Licencia CC0 de Kenney
+│   ├── PNG/Sprites/           # Sprites del Kenney Pack
+│   │   ├── Ships/             # Naves (jugador, enemigos, jefe)
+│   │   ├── Missiles/          # Balas
+│   │   ├── Effects/           # Explosiones
+│   │   └── ...                # Otros sprites del pack
+│   ├── alien-ufo-pack/        # Sprites del Alien UFO Pack
+│   ├── gravion/               # Sprites del jefe Gravion
+│   ├── sounds/                # Efectos de sonido (generados)
+│   └── License.txt            # Licencia CC0 de Kenney
 ├── src/
 │   ├── __init__.py
-│   ├── config.py          # Constantes del juego
-│   ├── game.py            # Bucle principal y HUD
-│   ├── background.py      # Fondo con estrellas
-│   ├── player.py          # Jugador
-│   ├── enemy.py           # Enemigos
-│   ├── bullet.py          # Balas
-│   ├── explosion.py       # Animación de explosión
-│   ├── powerup.py         # Power-ups
-│   └── boss.py            # Jefe y ataque especial
-├── main.py                # Punto de entrada
-├── environment.yml        # Dependencias Conda
+│   ├── config.py              # Constantes del juego
+│   ├── game.py                # Bucle principal y HUD
+│   ├── background.py          # Fondo con estrellas
+│   ├── player.py              # Jugador
+│   ├── enemy.py               # Enemigos
+│   ├── bullet.py              # Balas
+│   ├── explosion.py           # Animación de explosión
+│   ├── powerup.py             # Power-ups
+│   ├── boss.py                # Jefe 1
+│   ├── boss2.py               # Jefe 2 (bólido)
+│   ├── boss3.py               # Jefe 3 (alien commander)
+│   ├── gravion.py             # Jefe 4 (Gravion)
+│   ├── drone.py               # Dron auxiliar (AlienDrone)
+│   ├── energy_ball.py         # Bola de energía (Boss2)
+│   └── sonidos.py             # Generación de sonidos WAV
+├── main.py                    # Punto de entrada
+├── environment.yml            # Dependencias Conda
 ├── README.md
 └── .gitignore
 ```
@@ -126,7 +148,8 @@ juegoAvion_pyton/
 
 - **Lenguaje:** Python 3.11
 - **Framework:** Pygame 2.6.1
-- **Sprites:** [Kenney Space Shooter Extension](https://kenney.nl/assets/space-shooter-extension) (CC0)
+- **Sprites:** [Kenney Space Shooter Extension](https://kenney.nl/assets/space-shooter-extension) (CC0) + [Alien UFO Pack](https://kenney.nl/assets/alien-ufo-pack) (CC0)
+- **Sonidos:** Generados proceduralmente con `wave` + `struct`
 - **Entorno:** Miniconda
 
 ---
@@ -140,9 +163,6 @@ juegoAvion_pyton/
 
 ## Mejoras futuras
 
-- [ ] Efectos de sonido y música
-- [ ] Más tipos de enemigos
-- [ ] Jefes con patrones adicionales
 - [ ] Menú principal y pantalla de pausa
 - [ ] Guardado de puntuación máxima
 - [ ] Modo contrarreloj / endless
