@@ -19,13 +19,13 @@ Proyecto académico de la carrera **Técnico Superior en Sistemas Informáticos*
 - Disparo automático con cooldown fijo
 - Enemigos que descienden y disparan
 - Power-ups: vida extra, triple disparo, puntos bonus
-- **4 jefes** en rotación cada 5000 puntos
+- **6 jefes** en rotación cada 5000 puntos
 - Dificultad progresiva
 - Sistema de vida con barra de salud
 - Puntuación y pantalla de Game Over
 - Sprites pixel art (Kenney Asset Pack + Alien UFO Pack)
 - **Sonidos procedurales** generados con `wave` y `struct`
-- **3 habilidades especiales** que se aprenden al derrotar cada jefe
+- **6 habilidades especiales** que se aprenden al derrotar a cada jefe
 
 ---
 
@@ -63,6 +63,9 @@ python main.py
 | E         | Habilidad 1: Rayo |
 | B         | Habilidad 2: Bomba guiada |
 | R         | Habilidad 3: Naves aliadas |
+| C         | Habilidad 4: Colapso gravitacional |
+| X         | Habilidad 5: Misiles inteligentes |
+| V         | Habilidad 6: Teletransporte |
 | ESPACIO   | Reiniciar (Game Over) |
 
 El disparo es **automático** — no necesita botón.
@@ -84,17 +87,22 @@ El disparo es **automático** — no necesita botón.
 ### Jefes (rotación cada 5000 pts)
 1. **Boss** — Nave roja, ráfaga triple + rayo de plasma
 2. **Boss2** — Bólido de fuego, disparo en abanico + bola de energía
-3. **Boss3** — Comandante alienígena, ráfaga burst + invoca AlienDrones
-4. **Gravion** — Entidad gravitacional, asteroides orbitales + colapso gravitacional
+3. **Boss3** — Comandante alienígena, ráfaga burst + invoca **5 drones** y despliega un **escudo de energía** que reduce el daño a la mitad hasta eliminar todos los drones
+4. **Boss4** — Alien rosado, dispara **misiles inteligentes** que persiguen al jugador unos segundos antes de explotar (hay que esquivarlos)
+5. **Gravion** — Entidad gravitacional, asteroides orbitales + colapso gravitacional
+6. **Boss6** — Alien amarillo, **lluvia de disparos** + **teletransporte** que lo lleva detrás o cerca del jugador (obliga a moverse)
 
 ### Habilidades del jugador
-Se obtienen al derrotar a cada jefe. Se recargan cada 2000 puntos.
+Se obtienen al derrotar a cada jefe (el jugador aprende la habilidad especial del jefe vencido). Se recargan cada 2000 puntos.
 
-| Tecla | Habilidad    | Efecto |
-|-------|-------------|--------|
-| E     | Rayo         | Barrera continua que destruye enemigos al contacto |
-| B     | Bomba guiada | Proyectil teledirigido que persigue al enemigo más cercano |
-| R     | Naves aliadas | Spawnea 2-3 naves kamikaze que persiguen y chocan contra enemigos |
+| Tecla | Habilidad             | Efecto |
+|-------|-----------------------|--------|
+| E     | Rayo                  | Barrera continua que destruye enemigos al contacto |
+| B     | Bomba guiada          | Proyectil teledirigido que persigue al enemigo más cercano |
+| R     | Naves aliadas         | Spawnea 2-3 naves kamikaze que persiguen y chocan contra enemigos |
+| C     | Colapso gravitacional | Singularidad que atrae a los enemigos y los destruye con una onda expansiva |
+| X     | Misiles inteligentes  | Dispara misiles que persiguen al enemigo más cercano y explotan |
+| V     | Teletransporte        | Teleport a una posición aleatoria con invulnerabilidad de 1.5 s |
 
 ### Power-ups
 | Tipo  | Color   | Efecto              |
@@ -116,7 +124,7 @@ juegoAvion_pyton/
 │   │   ├── Effects/           # Explosiones
 │   │   └── ...                # Otros sprites del pack
 │   ├── alien-ufo-pack/        # Sprites del Alien UFO Pack
-│   ├── gravion/               # Sprites del jefe Gravion
+│   ├── Gravion/               # Sprites PNG del jefe Gravion
 │   ├── sounds/                # Efectos de sonido (generados)
 │   └── License.txt            # Licencia CC0 de Kenney
 ├── src/
@@ -131,9 +139,12 @@ juegoAvion_pyton/
 │   ├── powerup.py             # Power-ups
 │   ├── boss.py                # Jefe 1
 │   ├── boss2.py               # Jefe 2 (bólido)
-│   ├── boss3.py               # Jefe 3 (alien commander)
-│   ├── gravion.py             # Jefe 4 (Gravion)
+│   ├── boss3.py               # Jefe 3 (alien commander + escudo)
+│   ├── boss4.py               # Jefe 4 (alien misiles inteligentes)
+│   ├── gravion.py             # Jefe 5 (Gravion)
+│   ├── boss6.py               # Jefe 6 (alien teletransporte)
 │   ├── drone.py               # Dron auxiliar (AlienDrone)
+│   ├── misil.py               # Misil inteligente (homing)
 │   ├── energy_ball.py         # Bola de energía (Boss2)
 │   └── sonidos.py             # Generación de sonidos WAV
 ├── main.py                    # Punto de entrada
