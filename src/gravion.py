@@ -9,7 +9,7 @@ class Gravion(pygame.sprite.Sprite):
     def __init__(self, nivel):
         super().__init__()
         self.nivel = nivel
-        self.tipo = 4
+        self.tipo = 5
         self.habilidad_otorgada = 4
 
         base = "assets/Gravion"
