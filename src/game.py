@@ -13,6 +13,7 @@ from src.boss import Boss
 from src.boss2 import Boss2
 from src.boss3 import Boss3
 from src.boss4 import Boss4
+from src.boss6 import Boss6
 from src.gravion import Gravion
 from src.drone import AlienDrone
 from src.misil import MisilInteligente
@@ -66,6 +67,10 @@ class Game:
         self.habilidad_5_tiene = False
         self.habilidad_5_lista = False
         self.habilidad_5_puntos_base = 0
+        self.habilidad_6_tiene = False
+        self.habilidad_6_lista = False
+        self.habilidad_6_puntos_base = 0
+        self.tiempo_invulnerable = 0
         self.ultimo_danio_habilidad = 0
         self.ultimo_disparo_habilidad = 0
         self.habilidad_projectiles = []
@@ -120,6 +125,10 @@ class Game:
         self.habilidad_5_tiene = False
         self.habilidad_5_lista = False
         self.habilidad_5_puntos_base = 0
+        self.habilidad_6_tiene = False
+        self.habilidad_6_lista = False
+        self.habilidad_6_puntos_base = 0
+        self.tiempo_invulnerable = 0
         self.ultimo_danio_habilidad = 0
         self.ultimo_disparo_habilidad = 0
         self.habilidad_projectiles.clear()
@@ -185,6 +194,15 @@ class Game:
                         self.habilidad_5_lista = False
                         self.habilidad_5_puntos_base = self.puntuacion
                         self.sonidos.reproducir("habilidad")
+                if evento.key == pygame.K_v and not self.game_over:
+                    if self.habilidad_6_tiene and self.habilidad_6_lista:
+                        self.jugador.rect.center = (
+                            random.randint(30, ANCHO - 30),
+                            random.randint(40, ALTO - 40))
+                        self.tiempo_invulnerable = 90
+                        self.habilidad_6_lista = False
+                        self.habilidad_6_puntos_base = self.puntuacion
+                        self.sonidos.reproducir("habilidad")
 
     def spawn_powerup(self, x, y):
         if random.random() < 0.15:
@@ -213,10 +231,18 @@ class Game:
                 and not self.drones):
             self.jefe.desactivar_escudo()
 
+    def _danio_jugador(self, cantidad):
+        if self.tiempo_invulnerable > 0:
+            return
+        self.jugador.vida -= cantidad
+
     def update(self):
         ahora = pygame.time.get_ticks()
         if self.game_over:
             return
+
+        if self.tiempo_invulnerable > 0:
+            self.tiempo_invulnerable -= 1
 
         teclas = pygame.key.get_pressed()
         self.jugador.update(teclas, ahora)
@@ -238,13 +264,15 @@ class Game:
         if self.jefe is None and self.puntuacion >= self.proximo_jefe and not self.game_over:
             self.jefe_nivel += 1
             self.proximo_jefe += 5000
-            if self.jefe_nivel % 5 == 0:
+            if self.jefe_nivel % 6 == 0:
+                self.jefe = Boss6(self.jefe_nivel)
+            elif self.jefe_nivel % 6 == 5:
                 self.jefe = Gravion(self.jefe_nivel)
-            elif self.jefe_nivel % 5 == 4:
+            elif self.jefe_nivel % 6 == 4:
                 self.jefe = Boss4(self.jefe_nivel)
-            elif self.jefe_nivel % 5 == 3:
+            elif self.jefe_nivel % 6 == 3:
                 self.jefe = Boss3(self.jefe_nivel)
-            elif self.jefe_nivel % 5 == 2:
+            elif self.jefe_nivel % 6 == 2:
                 self.jefe = Boss2(self.jefe_nivel)
             else:
                 self.jefe = Boss(self.jefe_nivel)
@@ -282,7 +310,11 @@ class Game:
         # --- JEFE ---
         if self.jefe:
             if self.jefe.tipo != 5:
-                self.jefe.update(self.jugador.rect.centerx, ahora)
+                if self.jefe.tipo == 6:
+                    self.jefe.update(self.jugador.rect.centerx,
+                                     self.jugador.rect.centery, ahora)
+                else:
+                    self.jefe.update(self.jugador.rect.centerx, ahora)
             if self.jefe.tipo == 1:
                 if self.jefe.debe_disparar(ahora):
                     cx = self.jefe.rect.centerx
@@ -325,6 +357,11 @@ class Game:
                     self.jefe.lanzar_misiles(
                         (self.jugador.rect.centerx, self.jugador.rect.centery))
                     self.sonidos.reproducir("jefe_disparo")
+            elif self.jefe.tipo == 6:
+                if self.jefe.debe_disparar(ahora):
+                    bx = self.jefe.rect.centerx + random.randint(-60, 60)
+                    self.balas.append(Bullet(bx, self.jefe.rect.bottom + 5, 6))
+                    self.sonidos.reproducir("rafaga")
             elif self.jefe.tipo == 5:
                 player_vec = (self.jugador.rect.centerx, self.jugador.rect.centery)
                 self.jefe.update(ahora, player_vec)
@@ -339,7 +376,7 @@ class Game:
             for m in self.jefe.misiles[:]:
                 m.update(self.jugador.rect.centerx, self.jugador.rect.centery)
                 if m.get_rect().colliderect(rect_jugador):
-                    self.jugador.vida -= m.danio
+                    self._danio_jugador(m.danio)
                     self.explosiones.append(Explosion(int(m.x), int(m.y)))
                     self.jefe.misiles.remove(m)
                     self.sonidos.reproducir("golpe")
@@ -352,7 +389,7 @@ class Game:
             for a in self.jefe.get_asteroides_lanzados():
                 r = pygame.Rect(a["x"] - 14, a["y"] - 14, 28, 28)
                 if r.colliderect(rect_jugador):
-                    self.jugador.vida -= 15
+                    self._danio_jugador(15)
                     a["regen"] = 180
                     self.explosiones.append(Explosion(int(a["x"]), int(a["y"])))
 
@@ -372,7 +409,7 @@ class Game:
             dy = self.jugador.rect.centery - self.jefe.onda_centro.y
             d = math.hypot(dx, dy)
             if abs(d - self.jefe.radio_onda) < 20:
-                self.jugador.vida -= 10
+                self._danio_jugador(10)
             if d < self.jefe.radio_onda + 20 and d > 0:
                 self.jugador.rect.x += dx / d * 8
                 self.jugador.rect.y += dy / d * 8
@@ -421,7 +458,7 @@ class Game:
                         bala.activa = False
             else:  # del enemigo
                 if bala.get_rect().colliderect(rect_jugador):
-                    self.jugador.vida -= 10
+                    self._danio_jugador(10)
                     self.sonidos.reproducir("golpe")
                     bala.activa = False
 
@@ -435,7 +472,7 @@ class Game:
                     Explosion(enemigo.rect.centerx, enemigo.rect.centery)
                 )
                 self.enemigos.remove(enemigo)
-                self.jugador.vida -= 20
+                self._danio_jugador(20)
                 self.sonidos.reproducir("golpe")
                 self.spawn_powerup(enemigo.rect.centerx, enemigo.rect.centery)
 
@@ -445,7 +482,7 @@ class Game:
             if drone.get_rect().colliderect(rect_jugador):
                 self.explosiones.append(Explosion(int(drone.x), int(drone.y)))
                 self.drones.remove(drone)
-                self.jugador.vida -= 10
+                self._danio_jugador(10)
             elif not drone.activo:
                 self.drones.remove(drone)
 
@@ -454,7 +491,7 @@ class Game:
         # --- JEFE CHOCA CON JUGADOR ---
         if self.jefe and self.jefe.en_posicion:
             if self.jefe.get_rect().colliderect(rect_jugador):
-                self.jugador.vida -= 30
+                self._danio_jugador(30)
 
         # --- ENERGY BALLS (BOSS2) ---
         if self.jefe and self.jefe.tipo == 2:
@@ -471,7 +508,7 @@ class Game:
             ae.update()
             if ae.get_rect().colliderect(rect_jugador):
                 if ahora - self.ultimo_danio_aoe >= 500:
-                    self.jugador.vida -= ae.danio
+                    self._danio_jugador(ae.danio)
                     self.ultimo_danio_aoe = ahora
             if not ae.activa:
                 self.areas_explosion.remove(ae)
@@ -481,7 +518,7 @@ class Game:
             beam_rect = self.jefe.get_beam_rect()
             if beam_rect and beam_rect.colliderect(rect_jugador):
                 if ahora - self.ultimo_danio_rayo >= 500:
-                    self.jugador.vida -= 15
+                    self._danio_jugador(15)
                     self.ultimo_danio_rayo = ahora
 
         # --- HABILIDAD DEL JUGADOR ---
@@ -679,6 +716,9 @@ class Game:
         if not self.habilidad_5_lista and not (self.jugador.habilidad_activa and self.jugador.habilidad_tipo == 5):
             if self.puntuacion - self.habilidad_5_puntos_base >= 2000:
                 self.habilidad_5_lista = True
+        if not self.habilidad_6_lista:
+            if self.puntuacion - self.habilidad_6_puntos_base >= 2000:
+                self.habilidad_6_lista = True
 
         # --- MISILES DEL JUGADOR (HAB 5) ---
         for m in self.habilidad_misiles[:]:
@@ -774,6 +814,9 @@ class Game:
             elif hab == 5:
                 self.habilidad_5_tiene = True
                 self.habilidad_5_lista = True
+            elif hab == 6:
+                self.habilidad_6_tiene = True
+                self.habilidad_6_lista = True
             self.jefe = None
 
         # --- POWER-UPS ---
@@ -880,6 +923,15 @@ class Game:
             self.pantalla.blit(texto, (10, y_hab))
             y_hab += 18
 
+        if self.habilidad_6_tiene:
+            if self.habilidad_6_lista:
+                texto = fuente_pequena.render("V=TELEPORT [LISTA]", True, VERDE)
+            else:
+                pct = min(100, (self.puntuacion - self.habilidad_6_puntos_base) * 100 // 2000)
+                texto = fuente_pequena.render(f"V=TELEPORT {pct}%", True, (150, 150, 150))
+            self.pantalla.blit(texto, (10, y_hab))
+            y_hab += 18
+
         # Barra de vida del jugador
         ancho_barra = 180
         alto_barra = 18
@@ -937,6 +989,11 @@ class Game:
     def draw(self):
         self.fondo.draw(self.pantalla)
         self.jugador.draw(self.pantalla)
+        if self.tiempo_invulnerable > 0:
+            t = pygame.time.get_ticks() // 80
+            if t % 2 == 0:
+                pygame.draw.circle(self.pantalla, (255, 255, 255),
+                                   self.jugador.rect.center, 30, 2)
         if self.jugador.habilidad_activa and self.jugador.habilidad_tipo == 1:
             beam_rect = self.jugador.get_beam_rect()
             if beam_rect:
