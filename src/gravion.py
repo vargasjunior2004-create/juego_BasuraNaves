@@ -10,7 +10,7 @@ class Gravion(pygame.sprite.Sprite):
         super().__init__()
         self.nivel = nivel
         self.tipo = 4
-        self.habilidad_otorgada = None
+        self.habilidad_otorgada = 4
 
         base = "assets/Gravion"
         img_cuerpo = pygame.image.load(f"{base}/gravion_01_cuerpo.png").convert_alpha()

@@ -54,6 +54,13 @@ class Game:
         self.habilidad_3_tiene = False
         self.habilidad_3_lista = False
         self.habilidad_3_puntos_base = 0
+        self.habilidad_4_tiene = False
+        self.habilidad_4_lista = False
+        self.habilidad_4_puntos_base = 0
+        self.habilidad_4_fase = ""
+        self.habilidad_4_timer = 0
+        self.habilidad_4_centro = (0, 0)
+        self.habilidad_4_radio = 0
         self.ultimo_danio_habilidad = 0
         self.ultimo_disparo_habilidad = 0
         self.habilidad_projectiles = []
@@ -97,6 +104,13 @@ class Game:
         self.habilidad_3_tiene = False
         self.habilidad_3_lista = False
         self.habilidad_3_puntos_base = 0
+        self.habilidad_4_tiene = False
+        self.habilidad_4_lista = False
+        self.habilidad_4_puntos_base = 0
+        self.habilidad_4_fase = ""
+        self.habilidad_4_timer = 0
+        self.habilidad_4_centro = (0, 0)
+        self.habilidad_4_radio = 0
         self.ultimo_danio_habilidad = 0
         self.ultimo_disparo_habilidad = 0
         self.habilidad_projectiles.clear()
@@ -137,6 +151,20 @@ class Game:
                         self.jugador.tiempo_habilidad = self.jugador.duracion_habilidad
                         self.habilidad_3_lista = False
                         self.habilidad_3_puntos_base = self.puntuacion
+                        self.sonidos.reproducir("habilidad")
+                if evento.key == pygame.K_c and not self.game_over:
+                    if (self.habilidad_4_tiene and self.habilidad_4_lista
+                            and not self.jugador.habilidad_activa):
+                        self.jugador.habilidad_activa = True
+                        self.jugador.habilidad_tipo = 4
+                        self.jugador.tiempo_habilidad = 160
+                        self.habilidad_4_lista = False
+                        self.habilidad_4_puntos_base = self.puntuacion
+                        self.habilidad_4_fase = "pulling"
+                        self.habilidad_4_timer = 120
+                        self.habilidad_4_radio = 20
+                        self.habilidad_4_centro = (self.jugador.rect.centerx,
+                                                   self.jugador.rect.centery)
                         self.sonidos.reproducir("habilidad")
 
     def spawn_powerup(self, x, y):
@@ -467,6 +495,61 @@ class Game:
                             "activo": True,
                         })
 
+            elif self.jugador.habilidad_tipo == 4:
+                cx, cy = self.habilidad_4_centro
+                self.habilidad_4_timer -= 1
+                if self.habilidad_4_fase == "pulling":
+                    self.habilidad_4_radio = min(110, self.habilidad_4_radio + 2)
+                    fuerza = 3.0
+                    for enemigo in self.enemigos:
+                        dx = cx - enemigo.rect.centerx
+                        dy = cy - enemigo.rect.centery
+                        d = math.hypot(dx, dy)
+                        if d > 5:
+                            enemigo.rect.x += dx / d * fuerza
+                            enemigo.rect.y += dy / d * fuerza
+                    for drone in self.drones:
+                        dx = cx - drone.x
+                        dy = cy - drone.y
+                        d = math.hypot(dx, dy)
+                        if d > 5:
+                            drone.x += dx / d * fuerza
+                            drone.y += dy / d * fuerza
+                    if self.jefe and self.jefe.en_posicion:
+                        dx = cx - self.jefe.rect.centerx
+                        dy = cy - self.jefe.rect.centery
+                        d = math.hypot(dx, dy)
+                        if d > 5:
+                            self.jefe.rect.centerx += dx / d * 0.6
+                            self.jefe.rect.centery += dy / d * 0.6
+                    if self.habilidad_4_timer <= 0:
+                        self.habilidad_4_fase = "releasing"
+                        self.habilidad_4_timer = 40
+                        self.habilidad_4_radio = 30
+                elif self.habilidad_4_fase == "releasing":
+                    self.habilidad_4_radio += 14
+                    for enemigo in self.enemigos[:]:
+                        if math.hypot(cx - enemigo.rect.centerx,
+                                      cy - enemigo.rect.centery) < self.habilidad_4_radio:
+                            self.explosiones.append(
+                                Explosion(enemigo.rect.centerx, enemigo.rect.centery))
+                            self.enemigos.remove(enemigo)
+                            self.puntuacion += 100
+                    for drone in self.drones[:]:
+                        if math.hypot(cx - drone.x, cy - drone.y) < self.habilidad_4_radio:
+                            self.explosiones.append(Explosion(int(drone.x), int(drone.y)))
+                            self.drones.remove(drone)
+                            self.puntuacion += 50
+                    if (self.jefe and self.jefe.en_posicion
+                            and math.hypot(cx - self.jefe.rect.centerx,
+                                           cy - self.jefe.rect.centery) < self.habilidad_4_radio
+                            and ahora - self.ultimo_danio_habilidad >= 400):
+                        self._aplicar_danio_jefe(12)
+                        self.ultimo_danio_habilidad = ahora
+                if self.jugador.tiempo_habilidad <= 0:
+                    self.habilidad_4_fase = ""
+                    self.habilidad_4_radio = 0
+
         for p in self.habilidad_projectiles[:]:
             p["x"] += p["vx"]
             p["y"] += p["vy"]
@@ -531,6 +614,9 @@ class Game:
         if not self.habilidad_3_lista and not (self.jugador.habilidad_activa and self.jugador.habilidad_tipo == 3):
             if self.puntuacion - self.habilidad_3_puntos_base >= 2000:
                 self.habilidad_3_lista = True
+        if not self.habilidad_4_lista and not (self.jugador.habilidad_activa and self.jugador.habilidad_tipo == 4):
+            if self.puntuacion - self.habilidad_4_puntos_base >= 2000:
+                self.habilidad_4_lista = True
 
         # --- ALIADOS (HAB 3) ---
         for al in self.habilidad_aliados[:]:
@@ -590,6 +676,9 @@ class Game:
             elif hab == 3:
                 self.habilidad_3_tiene = True
                 self.habilidad_3_lista = True
+            elif hab == 4:
+                self.habilidad_4_tiene = True
+                self.habilidad_4_lista = True
             self.jefe = None
 
         # --- POWER-UPS ---
@@ -672,6 +761,18 @@ class Game:
             self.pantalla.blit(texto, (10, y_hab))
             y_hab += 18
 
+        if self.habilidad_4_tiene:
+            if self.jugador.habilidad_activa and self.jugador.habilidad_tipo == 4:
+                resto = (self.jugador.tiempo_habilidad + 59) // 60
+                texto = fuente_pequena.render(f"C=COLAPSO {resto}s", True, (0, 200, 255))
+            elif self.habilidad_4_lista:
+                texto = fuente_pequena.render("C=COLAPSO [LISTA]", True, VERDE)
+            else:
+                pct = min(100, (self.puntuacion - self.habilidad_4_puntos_base) * 100 // 2000)
+                texto = fuente_pequena.render(f"C=COLAPSO {pct}%", True, (150, 150, 150))
+            self.pantalla.blit(texto, (10, y_hab))
+            y_hab += 18
+
         # Barra de vida del jugador
         ancho_barra = 180
         alto_barra = 18
@@ -741,6 +842,22 @@ class Game:
                 pg(self.pantalla, (120, 40, 180), (bx - 3, by, bw + 6, bh))
                 pg(self.pantalla, (200, 100, 240), (bx, by, bw, bh))
                 pg(self.pantalla, (255, 230, 255), (bx, by + bh - bh // 4, bw, bh // 4))
+        if self.jugador.habilidad_activa and self.jugador.habilidad_tipo == 4:
+            cx, cy = self.habilidad_4_centro
+            r = self.habilidad_4_radio
+            if self.habilidad_4_fase == "pulling":
+                glow = pygame.Surface((r * 2 + 40, r * 2 + 40), pygame.SRCALPHA)
+                pygame.draw.circle(glow, (80, 60, 180, 60), (r + 20, r + 20), r)
+                pygame.draw.circle(glow, (150, 100, 255, 90),
+                                   (r + 20, r + 20), max(4, r - 8))
+                self.pantalla.blit(glow, (cx - r - 20, cy - r - 20))
+                pygame.draw.circle(self.pantalla, (120, 80, 220),
+                                   (int(cx), int(cy)), max(4, r), 2)
+            elif self.habilidad_4_fase == "releasing":
+                pygame.draw.circle(self.pantalla, (160, 90, 255),
+                                   (int(cx), int(cy)), int(r), 3)
+                pygame.draw.circle(self.pantalla, (220, 150, 255),
+                                   (int(cx), int(cy)), max(4, int(r) - 8), 2)
         if self.jefe:
             self.jefe.draw(self.pantalla)
         for drone in self.drones:
