@@ -150,6 +150,22 @@ class Game:
                 tipo = "puntos"
             self.powerups.append(PowerUp(x, y, tipo))
 
+    def _aplicar_danio_jefe(self, danio):
+        if not self.jefe:
+            return
+        if hasattr(self.jefe, "recibir_danio"):
+            self.jefe.recibir_danio(danio)
+        else:
+            self.jefe.vida -= danio
+            if self.jefe.vida <= 0:
+                self.jefe.activo = False
+
+    def _chequear_escudo_jefe(self):
+        if (self.jefe and self.jefe.tipo == 3
+                and getattr(self.jefe, "escudo_activo", False)
+                and not self.drones):
+            self.jefe.desactivar_escudo()
+
     def update(self):
         ahora = pygame.time.get_ticks()
         if self.game_over:
@@ -246,8 +262,9 @@ class Game:
                     self.sonidos.reproducir("rafaga")
                 if self.jefe.refuerzos_pendientes:
                     self.jefe.refuerzos_pendientes = False
+                    self.jefe.activar_escudo()
                     self.sonidos.reproducir("alarma_jefe")
-                    for _ in range(random.randint(2, 3)):
+                    for _ in range(5):
                         x = random.randint(30, ANCHO - 30)
                         y = random.randint(-50, -20)
                         self.drones.append(
@@ -333,10 +350,8 @@ class Game:
                         danio = 5
                         if self.jefe.tipo == 4 and hasattr(self.jefe, 'vulnerable') and self.jefe.vulnerable:
                             danio = 20
-                        self.jefe.vida -= danio
+                        self._aplicar_danio_jefe(danio)
                         bala.activa = False
-                        if self.jefe.vida <= 0:
-                            self.jefe.activo = False
             else:  # del enemigo
                 if bala.get_rect().colliderect(rect_jugador):
                     self.jugador.vida -= 10
@@ -366,6 +381,8 @@ class Game:
                 self.jugador.vida -= 10
             elif not drone.activo:
                 self.drones.remove(drone)
+
+        self._chequear_escudo_jefe()
 
         # --- JEFE CHOCA CON JUGADOR ---
         if self.jefe and self.jefe.en_posicion:
@@ -419,10 +436,8 @@ class Game:
                     if self.jefe and self.jefe.en_posicion:
                         if beam_rect.colliderect(self.jefe.get_rect()):
                             if ahora - self.ultimo_danio_habilidad >= 500:
-                                self.jefe.vida -= 8
+                                self._aplicar_danio_jefe(8)
                                 self.ultimo_danio_habilidad = ahora
-                                if self.jefe.vida <= 0:
-                                    self.jefe.activo = False
 
             elif self.jugador.habilidad_tipo == 2:
                 if ahora - self.ultimo_disparo_habilidad >= 400:
@@ -483,10 +498,8 @@ class Game:
                 r = pygame.Rect(p["x"] - radio_col, p["y"] - radio_col,
                                 radio_col * 2, radio_col * 2)
                 if r.colliderect(self.jefe.get_rect()):
-                    self.jefe.vida -= 15
+                    self._aplicar_danio_jefe(15)
                     impacto = True
-                    if self.jefe.vida <= 0:
-                        self.jefe.activo = False
             if impacto or not p["activo"]:
                 self.habilidad_explosiones.append(
                     AreaExplosion(p["x"], p["y"], 10))
@@ -503,10 +516,8 @@ class Game:
             if self.jefe and self.jefe.en_posicion:
                 if ae.get_rect().colliderect(self.jefe.get_rect()):
                     if ahora - self.ultimo_danio_habilidad >= 500:
-                        self.jefe.vida -= ae.danio
+                        self._aplicar_danio_jefe(ae.danio)
                         self.ultimo_danio_habilidad = ahora
-                        if self.jefe.vida <= 0:
-                            self.jefe.activo = False
             if not ae.activa:
                 self.habilidad_explosiones.remove(ae)
 
@@ -569,13 +580,14 @@ class Game:
             self.explosiones.append(Explosion(cx + 20, cy + 15))
             self.puntuacion += 1000 * self.jefe_nivel
             self.sonidos.reproducir("explosion")
-            if self.jefe.tipo == 1:
+            hab = getattr(self.jefe, "habilidad_otorgada", None)
+            if hab == 1:
                 self.habilidad_1_tiene = True
                 self.habilidad_1_lista = True
-            elif self.jefe.tipo == 2:
+            elif hab == 2:
                 self.habilidad_2_tiene = True
                 self.habilidad_2_lista = True
-            elif self.jefe.tipo == 3:
+            elif hab == 3:
                 self.habilidad_3_tiene = True
                 self.habilidad_3_lista = True
             self.jefe = None

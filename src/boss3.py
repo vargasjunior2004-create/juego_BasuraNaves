@@ -32,6 +32,21 @@ class Boss3:
         self.disparos_restantes_rafaga = 0
         self.rafagas_completadas = 0
         self.refuerzos_pendientes = False
+        self.escudo_activo = False
+        self.habilidad_otorgada = 3
+
+    def activar_escudo(self):
+        self.escudo_activo = True
+
+    def desactivar_escudo(self):
+        self.escudo_activo = False
+
+    def recibir_danio(self, danio):
+        if self.escudo_activo:
+            danio = max(1, danio // 2)
+        self.vida -= danio
+        if self.vida <= 0:
+            self.activo = False
 
     def get_rect(self):
         return self.rect.inflate(-10, -10)
@@ -78,6 +93,22 @@ class Boss3:
 
     def draw(self, pantalla):
         pantalla.blit(self.image, self.rect)
+
+        if self.escudo_activo:
+            cx, cy = self.rect.center
+            t = pygame.time.get_ticks() // 60
+            pulso = (t % 8) - 4
+            radio = 55 + pulso
+            glow = pygame.Surface((radio * 2 + 20, radio * 2 + 20), pygame.SRCALPHA)
+            pygame.draw.circle(glow, (70, 180, 255, 40),
+                               (radio + 10, radio + 10), radio + 10)
+            pygame.draw.circle(glow, (120, 220, 255, 90),
+                               (radio + 10, radio + 10), radio + 6)
+            pantalla.blit(glow, (cx - radio - 10, cy - radio - 10))
+            pygame.draw.circle(pantalla, (150, 230, 255),
+                               (cx, cy), radio, 2)
+            pygame.draw.circle(pantalla, (220, 250, 255),
+                               (cx, cy), radio - 6, 1)
 
         if self.inmune:
             t = pygame.time.get_ticks() // 80
