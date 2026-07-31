@@ -17,21 +17,11 @@ class Gravion(pygame.sprite.Sprite):
         img_nucleo = pygame.image.load(f"{base}/gravion_03_nucleo.png").convert_alpha()
         img_ast = pygame.image.load(f"{base}/gravion_04_asteroide.png").convert_alpha()
 
-        def _circular(surf):
-            w, h = surf.get_size()
-            d = max(w, h)
-            mascara = pygame.Surface((d, d), pygame.SRCALPHA)
-            pygame.draw.circle(mascara, (255, 255, 255), (d // 2, d // 2), d // 2)
-            res = pygame.Surface((d, d), pygame.SRCALPHA)
-            res.blit(surf, ((d - w) // 2, (d - h) // 2))
-            res.blit(mascara, (0, 0), None, pygame.BLEND_RGBA_MULT)
-            return res
-
-        self.body = _circular(pygame.transform.smoothscale(img_cuerpo, (140, 127)))
-        self.dome = _circular(pygame.transform.smoothscale(img_domo, (80, 80)))
-        self.nucleus_orig = _circular(pygame.transform.smoothscale(img_nucleo, (56, 55)))
+        self.body = pygame.transform.smoothscale(img_cuerpo, (140, 140))
+        self.dome = pygame.transform.smoothscale(img_domo, (80, 80))
+        self.nucleus_orig = pygame.transform.smoothscale(img_nucleo, (56, 56))
         self.nucleus_img = self.nucleus_orig
-        self.ast_orig = _circular(pygame.transform.smoothscale(img_ast, (28, 28)))
+        self.ast_orig = pygame.transform.smoothscale(img_ast, (28, 28))
 
         self.pos = pygame.Vector2(ANCHO // 2, -100)
         self.rect = pygame.Rect(0, 0, 80, 80)
