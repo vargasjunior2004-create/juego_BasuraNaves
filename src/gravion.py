@@ -11,11 +11,11 @@ class Gravion(pygame.sprite.Sprite):
         self.nivel = nivel
         self.tipo = 4
 
-        base = "assets/gravion"
-        img_cuerpo = pygame.image.load(f"{base}/cuerpo.jpeg").convert()
-        img_domo = pygame.image.load(f"{base}/domogravion.jpeg").convert()
-        img_nucleo = pygame.image.load(f"{base}/nucleo.jpeg").convert()
-        img_ast = pygame.image.load(f"{base}/asteroide.jpeg").convert()
+        base = "assets/Gravion"
+        img_cuerpo = pygame.image.load(f"{base}/gravion_01_cuerpo.png").convert_alpha()
+        img_domo = pygame.image.load(f"{base}/gravion_02_domo_gravion.png").convert_alpha()
+        img_nucleo = pygame.image.load(f"{base}/gravion_03_nucleo.png").convert_alpha()
+        img_ast = pygame.image.load(f"{base}/gravion_04_asteroide.png").convert_alpha()
 
         def _circular(surf):
             w, h = surf.get_size()
