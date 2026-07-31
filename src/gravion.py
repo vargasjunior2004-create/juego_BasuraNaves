@@ -43,6 +43,7 @@ class Gravion(pygame.sprite.Sprite):
             a = {
                 "idx": i,
                 "angle_deg": i * 72,
+                "vel_ang": random.choice([-1, 1]) * random.uniform(0.4, 1.0),
                 "rot": random.uniform(0, 360),
                 "radius": 105,
                 "attached": True,
@@ -110,6 +111,7 @@ class Gravion(pygame.sprite.Sprite):
 
         for a in self.asteroides:
             if a["attached"]:
+                a["angle_deg"] = (a["angle_deg"] + a["vel_ang"]) % 360
                 rad = math.radians(a["angle_deg"])
                 a["x"] = self.pos.x + math.cos(rad) * a["radius"]
                 a["y"] = self.pos.y + math.sin(rad) * a["radius"]
