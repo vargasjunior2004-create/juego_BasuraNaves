@@ -212,8 +212,10 @@ class Game:
                 tipo = "vida"
             elif r <= 7:
                 tipo = "poder"
-            else:
+            elif r <= 9:
                 tipo = "puntos"
+            else:
+                tipo = "escudo"
             self.powerups.append(PowerUp(x, y, tipo))
 
     def _aplicar_danio_jefe(self, danio):
@@ -233,7 +235,7 @@ class Game:
             self.jefe.desactivar_escudo()
 
     def _danio_jugador(self, cantidad):
-        if self.tiempo_invulnerable > 0:
+        if self.tiempo_invulnerable > 0 or self.jugador.escudo_activo:
             return
         self.jugador.vida -= cantidad
         self.jugador.poder_activo = False
@@ -855,6 +857,8 @@ class Game:
                     )
                 elif pu.tipo == "poder":
                     self.jugador.activar_poder()
+                elif pu.tipo == "escudo":
+                    self.jugador.activar_escudo()
                 else:
                     self.puntuacion += 200
                 self.sonidos.reproducir("powerup")
@@ -883,7 +887,13 @@ class Game:
             texto_poder = fuente_pequena.render("PODER", True, AMARILLO)
             self.pantalla.blit(texto_poder, (10, 45))
 
-        y_hab = 70
+        if self.jugador.escudo_activo:
+            resto = max(0, self.jugador.tiempo_escudo) // 60
+            texto_escudo = fuente_pequena.render(f"ESCUDO {resto}s",
+                                                 True, (0, 180, 255))
+            self.pantalla.blit(texto_escudo, (10, 62))
+
+        y_hab = 85 if self.jugador.escudo_activo else 70
         if self.habilidad_1_tiene:
             if self.jugador.habilidad_activa and self.jugador.habilidad_tipo == 1:
                 resto = (self.jugador.tiempo_habilidad + 59) // 60

@@ -105,11 +105,12 @@ Se obtienen al derrotar a cada jefe (el jugador aprende la habilidad especial de
 | 6     | Teletransporte        | Teleport a una posición aleatoria con invulnerabilidad de 1.5 s |
 
 ### Power-ups
-| Tipo  | Color   | Efecto              |
-|-------|---------|---------------------|
-| Vida  | Verde   | +30 HP              |
-| Poder | Amarillo| Triple disparo 8s   |
-| Puntos| Azul    | +200 puntos         |
+| Tipo   | Color    | Efecto                 |
+|--------|----------|------------------------|
+| Vida   | Verde    | +30 HP                 |
+| Poder  | Amarillo | Triple disparo permanente (se pierde al recibir daño) |
+| Escudo | Azul     | Invulnerabilidad por 10 s |
+| Puntos | Azul osc.| +200 puntos            |
 
 ---
 

@@ -33,7 +33,7 @@ class Boss:
         self.rect = pygame.Rect(0, 0, 130, 120)
         self.rect.center = (int(self.pos.x), int(self.pos.y))
 
-        self.vida_maxima = 40 * nivel
+        self.vida_maxima = 60 * nivel
         self.vida = self.vida_maxima
         self.velocidad_x = 2
         self.direccion = 1

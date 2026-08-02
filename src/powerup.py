@@ -30,6 +30,8 @@ class PowerUp:
             color = VERDE
         elif self.tipo == "poder":
             color = AMARILLO
+        elif self.tipo == "escudo":
+            color = (0, 160, 255)
         else:
             color = (0, 180, 255)
 
@@ -55,6 +57,10 @@ class PowerUp:
                 (self.x - 8, self.y),
                 (self.x - 2, self.y - 2)
             ])
+        elif self.tipo == "escudo":
+            # Escudo: circulo
+            pygame.draw.circle(pantalla, BLANCO, (self.x, self.y), 10, 3)
+            pygame.draw.circle(pantalla, BLANCO, (self.x, self.y), 5, 1)
         else:  # puntos
             # Diamante / rombo
             pygame.draw.polygon(pantalla, BLANCO, [

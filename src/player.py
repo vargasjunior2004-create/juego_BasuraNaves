@@ -20,6 +20,9 @@ class Player:
         self.cooldown_disparo = 250
         self.poder_activo = False
 
+        self.escudo_activo = False
+        self.tiempo_escudo = 0
+
         self.habilidad_tipo = 0
         self.habilidad_activa = False
         self.tiempo_habilidad = 0
@@ -47,6 +50,11 @@ class Player:
 
         self.rect.clamp_ip(pygame.Rect(0, 0, ANCHO, ALTO))
 
+        if self.escudo_activo:
+            self.tiempo_escudo -= 1
+            if self.tiempo_escudo <= 0:
+                self.escudo_activo = False
+
     def disparar(self, ahora):
         if ahora - self.ultimo_disparo >= self.cooldown_disparo:
             self.ultimo_disparo = ahora
@@ -56,8 +64,17 @@ class Player:
     def activar_poder(self):
         self.poder_activo = True
 
+    def activar_escudo(self):
+        self.escudo_activo = True
+        self.tiempo_escudo = 600
+
     def draw(self, pantalla):
         if self.poder_activo:
             pygame.draw.circle(pantalla, (255, 255, 0),
                                self.rect.center, 30, 3)
+        if self.escudo_activo:
+            pygame.draw.circle(pantalla, (0, 180, 255),
+                               self.rect.center, 36, 3)
+            pygame.draw.circle(pantalla, (120, 220, 255),
+                               self.rect.center, 40, 1)
         pantalla.blit(self.image, self.rect)
