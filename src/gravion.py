@@ -28,7 +28,7 @@ class Gravion(pygame.sprite.Sprite):
         self.rect = pygame.Rect(0, 0, 80, 80)
         self.rect.center = (self.pos.x, self.pos.y)
 
-        self.vida_maxima = 75 * nivel
+        self.vida_maxima = 225 * nivel
         self.vida = self.vida_maxima
         self.activo = True
         self.en_posicion = False
