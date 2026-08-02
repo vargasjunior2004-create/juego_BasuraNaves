@@ -18,6 +18,7 @@ from src.gravion import Gravion
 from src.drone import AlienDrone
 from src.misil import MisilInteligente
 from src.energy_ball import EnergyBall
+from src.bola_acido import BolaAcido
 from src.sonidos import GestorSonidos
 from src.explosion import AreaExplosion
 
@@ -318,11 +319,11 @@ class Game:
                     self.jefe.update(self.jugador.rect.centerx, ahora)
             if self.jefe.tipo == 1:
                 if self.jefe.debe_disparar(ahora):
-                    cx = self.jefe.rect.centerx
-                    by = self.jefe.rect.bottom + 5
-                    self.balas.append(Bullet(cx, by, 5))
-                    self.balas.append(Bullet(cx - 20, by, 5))
-                    self.balas.append(Bullet(cx + 20, by, 5))
+                    ball = BolaAcido(
+                        self.jefe.rect.centerx, self.jefe.rect.centery,
+                        (self.jugador.rect.centerx, self.jugador.rect.centery),
+                        self.jefe.nivel)
+                    self.jefe.bolas_acido.append(ball)
                     self.sonidos.reproducir("jefe_disparo")
             elif self.jefe.tipo == 2:
                 if self.jefe.debe_disparar(ahora):
@@ -504,6 +505,16 @@ class Game:
         if self.jefe and self.jefe.en_posicion:
             if self.jefe.get_rect().colliderect(rect_jugador):
                 self._danio_jugador(30)
+
+        # --- BOLAS ACIDO (BOSS1) ---
+        if self.jefe and self.jefe.tipo == 1:
+            for b in self.jefe.bolas_acido[:]:
+                if b.get_rect().colliderect(rect_jugador):
+                    self._danio_jugador(b.danio)
+                    self.sonidos.reproducir("golpe")
+                    self.jefe.bolas_acido.remove(b)
+                elif not b.activa:
+                    self.jefe.bolas_acido.remove(b)
 
         # --- ENERGY BALLS (BOSS2) ---
         if self.jefe and self.jefe.tipo == 2:
