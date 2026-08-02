@@ -235,6 +235,7 @@ class Game:
         if self.tiempo_invulnerable > 0:
             return
         self.jugador.vida -= cantidad
+        self.jugador.poder_activo = False
 
     def update(self):
         ahora = pygame.time.get_ticks()
@@ -868,9 +869,7 @@ class Game:
         self.pantalla.blit(texto_score, (10, 10))
 
         if self.jugador.poder_activo:
-            resto = max(0, (self.jugador.duracion_poder -
-                          (pygame.time.get_ticks() - self.jugador.tiempo_inicio_poder)) // 1000)
-            texto_poder = fuente_pequena.render(f"PODER {resto}s", True, AMARILLO)
+            texto_poder = fuente_pequena.render("PODER", True, AMARILLO)
             self.pantalla.blit(texto_poder, (10, 45))
 
         y_hab = 70

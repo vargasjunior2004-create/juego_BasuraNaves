@@ -19,8 +19,6 @@ class Player:
         self.ultimo_disparo = 0
         self.cooldown_disparo = 250
         self.poder_activo = False
-        self.tiempo_inicio_poder = 0
-        self.duracion_poder = 8000
 
         self.habilidad_tipo = 0
         self.habilidad_activa = False
@@ -49,9 +47,6 @@ class Player:
 
         self.rect.clamp_ip(pygame.Rect(0, 0, ANCHO, ALTO))
 
-        if self.poder_activo and ahora - self.tiempo_inicio_poder >= self.duracion_poder:
-            self.poder_activo = False
-
     def disparar(self, ahora):
         if ahora - self.ultimo_disparo >= self.cooldown_disparo:
             self.ultimo_disparo = ahora
@@ -60,7 +55,6 @@ class Player:
 
     def activar_poder(self):
         self.poder_activo = True
-        self.tiempo_inicio_poder = pygame.time.get_ticks()
 
     def draw(self, pantalla):
         if self.poder_activo:
