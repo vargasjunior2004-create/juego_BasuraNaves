@@ -360,7 +360,18 @@ class Game:
             elif self.jefe.tipo == 6:
                 if self.jefe.debe_disparar(ahora):
                     bx = self.jefe.rect.centerx + random.randint(-60, 60)
-                    self.balas.append(Bullet(bx, self.jefe.rect.bottom + 5, 6))
+                    by = self.jefe.rect.bottom + 5
+                    px = self.jugador.rect.centerx + random.randint(-40, 40)
+                    py = self.jugador.rect.centery + random.randint(-30, 30)
+                    dx = px - bx
+                    dy = py - by
+                    d = math.hypot(dx, dy)
+                    if d > 0:
+                        vx = dx / d * 6
+                        vy = dy / d * 6
+                    else:
+                        vx, vy = 0, 6
+                    self.balas.append(Bullet(bx, by, 6, vx, vy))
                     self.sonidos.reproducir("rafaga")
             elif self.jefe.tipo == 5:
                 player_vec = (self.jugador.rect.centerx, self.jugador.rect.centery)
