@@ -60,12 +60,12 @@ python main.py
 | → / D     | Mover derecha    |
 | ↑ / W     | Mover arriba     |
 | ↓ / S     | Mover abajo      |
-| E         | Habilidad 1: Rayo |
-| B         | Habilidad 2: Bomba guiada |
-| R         | Habilidad 3: Naves aliadas |
-| C         | Habilidad 4: Colapso gravitacional |
-| X         | Habilidad 5: Misiles inteligentes |
-| V         | Habilidad 6: Teletransporte |
+| 1         | Habilidad 1: Rayo |
+| 2         | Habilidad 2: Bomba guiada |
+| 3         | Habilidad 3: Naves aliadas |
+| 4         | Habilidad 4: Colapso gravitacional |
+| 5         | Habilidad 5: Misiles inteligentes |
+| 6         | Habilidad 6: Teletransporte |
 | ESPACIO   | Reiniciar (Game Over) |
 
 El disparo es **automático** — no necesita botón.
@@ -77,7 +77,7 @@ El disparo es **automático** — no necesita botón.
 ### Jugador
 - **Vida:** 100 HP
 - **Disparo:** cada 250 ms
-- **Triple disparo:** power-up amarillo (8 segundos)
+- **Triple disparo:** power-up amarillo (permanente; se pierde al recibir daño)
 
 ### Enemigos
 - Aparecen desde arriba
@@ -97,12 +97,12 @@ Se obtienen al derrotar a cada jefe (el jugador aprende la habilidad especial de
 
 | Tecla | Habilidad             | Efecto |
 |-------|-----------------------|--------|
-| E     | Rayo                  | Barrera continua que destruye enemigos al contacto |
-| B     | Bomba guiada          | Proyectil teledirigido que persigue al enemigo más cercano |
-| R     | Naves aliadas         | Spawnea 2-3 naves kamikaze que persiguen y chocan contra enemigos |
-| C     | Colapso gravitacional | Singularidad que atrae a los enemigos y los destruye con una onda expansiva |
-| X     | Misiles inteligentes  | Dispara misiles que persiguen al enemigo más cercano y explotan |
-| V     | Teletransporte        | Teleport a una posición aleatoria con invulnerabilidad de 1.5 s |
+| 1     | Rayo                  | Barrera continua que destruye enemigos al contacto |
+| 2     | Bomba guiada          | Proyectil teledirigido que persigue al enemigo más cercano |
+| 3     | Naves aliadas         | Spawnea 2-3 naves kamikaze que persiguen y chocan contra enemigos |
+| 4     | Colapso gravitacional | Singularidad que atrae a los enemigos y los destruye con una onda expansiva |
+| 5     | Misiles inteligentes  | Dispara misiles que persiguen al enemigo más cercano y explotan |
+| 6     | Teletransporte        | Teleport a una posición aleatoria con invulnerabilidad de 1.5 s |
 
 ### Power-ups
 | Tipo  | Color   | Efecto              |

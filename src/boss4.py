@@ -19,7 +19,7 @@ class Boss4:
         self.rect.centerx = ANCHO // 2
         self.rect.y = -self.rect.height
 
-        self.vida_maxima = 20 * nivel
+        self.vida_maxima = 40 * nivel
         self.vida = self.vida_maxima
         self.velocidad_x = 2
         self.direccion = 1

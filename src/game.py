@@ -145,7 +145,7 @@ class Game:
             if evento.type == pygame.KEYDOWN:
                 if self.game_over and evento.key == pygame.K_SPACE:
                     self.reiniciar()
-                if evento.key == pygame.K_e and not self.game_over:
+                if evento.key == pygame.K_1 and not self.game_over:
                     if (self.habilidad_1_tiene and self.habilidad_1_lista
                             and not self.jugador.habilidad_activa):
                         self.jugador.habilidad_activa = True
@@ -154,7 +154,7 @@ class Game:
                         self.habilidad_1_lista = False
                         self.habilidad_1_puntos_base = self.puntuacion
                         self.sonidos.reproducir("habilidad")
-                if evento.key == pygame.K_b and not self.game_over:
+                if evento.key == pygame.K_2 and not self.game_over:
                     if (self.habilidad_2_tiene and self.habilidad_2_lista
                             and not self.jugador.habilidad_activa):
                         self.jugador.habilidad_activa = True
@@ -163,7 +163,7 @@ class Game:
                         self.habilidad_2_lista = False
                         self.habilidad_2_puntos_base = self.puntuacion
                         self.sonidos.reproducir("habilidad")
-                if evento.key == pygame.K_r and not self.game_over:
+                if evento.key == pygame.K_3 and not self.game_over:
                     if (self.habilidad_3_tiene and self.habilidad_3_lista
                             and not self.jugador.habilidad_activa):
                         self.jugador.habilidad_activa = True
@@ -172,7 +172,7 @@ class Game:
                         self.habilidad_3_lista = False
                         self.habilidad_3_puntos_base = self.puntuacion
                         self.sonidos.reproducir("habilidad")
-                if evento.key == pygame.K_c and not self.game_over:
+                if evento.key == pygame.K_4 and not self.game_over:
                     if (self.habilidad_4_tiene and self.habilidad_4_lista
                             and not self.jugador.habilidad_activa):
                         self.jugador.habilidad_activa = True
@@ -186,7 +186,7 @@ class Game:
                         self.habilidad_4_centro = (self.jugador.rect.centerx,
                                                    self.jugador.rect.centery)
                         self.sonidos.reproducir("habilidad")
-                if evento.key == pygame.K_x and not self.game_over:
+                if evento.key == pygame.K_5 and not self.game_over:
                     if (self.habilidad_5_tiene and self.habilidad_5_lista
                             and not self.jugador.habilidad_activa):
                         self.jugador.habilidad_activa = True
@@ -195,7 +195,7 @@ class Game:
                         self.habilidad_5_lista = False
                         self.habilidad_5_puntos_base = self.puntuacion
                         self.sonidos.reproducir("habilidad")
-                if evento.key == pygame.K_v and not self.game_over:
+                if evento.key == pygame.K_6 and not self.game_over:
                     if self.habilidad_6_tiene and self.habilidad_6_lista:
                         self.jugador.rect.center = (
                             random.randint(30, ANCHO - 30),
@@ -887,69 +887,69 @@ class Game:
         if self.habilidad_1_tiene:
             if self.jugador.habilidad_activa and self.jugador.habilidad_tipo == 1:
                 resto = (self.jugador.tiempo_habilidad + 59) // 60
-                texto = fuente_pequena.render(f"E=RAYO {resto}s", True, (0, 200, 255))
+                texto = fuente_pequena.render(f"1=RAYO {resto}s", True, (0, 200, 255))
             elif self.habilidad_1_lista:
-                texto = fuente_pequena.render("E=RAYO [LISTA]", True, VERDE)
+                texto = fuente_pequena.render("1=RAYO [LISTA]", True, VERDE)
             else:
                 pct = min(100, (self.puntuacion - self.habilidad_1_puntos_base) * 100 // 2000)
-                texto = fuente_pequena.render(f"E=RAYO {pct}%", True, (150, 150, 150))
+                texto = fuente_pequena.render(f"1=RAYO {pct}%", True, (150, 150, 150))
             self.pantalla.blit(texto, (10, y_hab))
             y_hab += 18
 
         if self.habilidad_2_tiene:
             if self.jugador.habilidad_activa and self.jugador.habilidad_tipo == 2:
                 resto = (self.jugador.tiempo_habilidad + 59) // 60
-                texto = fuente_pequena.render(f"B=BOMBA {resto}s", True, (0, 200, 255))
+                texto = fuente_pequena.render(f"2=BOMBA {resto}s", True, (0, 200, 255))
             elif self.habilidad_2_lista:
-                texto = fuente_pequena.render("B=BOMBA [LISTA]", True, VERDE)
+                texto = fuente_pequena.render("2=BOMBA [LISTA]", True, VERDE)
             else:
                 pct = min(100, (self.puntuacion - self.habilidad_2_puntos_base) * 100 // 2000)
-                texto = fuente_pequena.render(f"B=BOMBA {pct}%", True, (150, 150, 150))
+                texto = fuente_pequena.render(f"2=BOMBA {pct}%", True, (150, 150, 150))
             self.pantalla.blit(texto, (10, y_hab))
             y_hab += 18
 
         if self.habilidad_3_tiene:
             if self.jugador.habilidad_activa and self.jugador.habilidad_tipo == 3:
                 resto = (self.jugador.tiempo_habilidad + 59) // 60
-                texto = fuente_pequena.render(f"R=NAVES {resto}s", True, (0, 200, 255))
+                texto = fuente_pequena.render(f"3=NAVES {resto}s", True, (0, 200, 255))
             elif self.habilidad_3_lista:
-                texto = fuente_pequena.render("R=NAVES [LISTA]", True, VERDE)
+                texto = fuente_pequena.render("3=NAVES [LISTA]", True, VERDE)
             else:
                 pct = min(100, (self.puntuacion - self.habilidad_3_puntos_base) * 100 // 2000)
-                texto = fuente_pequena.render(f"R=NAVES {pct}%", True, (150, 150, 150))
+                texto = fuente_pequena.render(f"3=NAVES {pct}%", True, (150, 150, 150))
             self.pantalla.blit(texto, (10, y_hab))
             y_hab += 18
 
         if self.habilidad_4_tiene:
             if self.jugador.habilidad_activa and self.jugador.habilidad_tipo == 4:
                 resto = (self.jugador.tiempo_habilidad + 59) // 60
-                texto = fuente_pequena.render(f"C=COLAPSO {resto}s", True, (0, 200, 255))
+                texto = fuente_pequena.render(f"4=COLAPSO {resto}s", True, (0, 200, 255))
             elif self.habilidad_4_lista:
-                texto = fuente_pequena.render("C=COLAPSO [LISTA]", True, VERDE)
+                texto = fuente_pequena.render("4=COLAPSO [LISTA]", True, VERDE)
             else:
                 pct = min(100, (self.puntuacion - self.habilidad_4_puntos_base) * 100 // 2000)
-                texto = fuente_pequena.render(f"C=COLAPSO {pct}%", True, (150, 150, 150))
+                texto = fuente_pequena.render(f"4=COLAPSO {pct}%", True, (150, 150, 150))
             self.pantalla.blit(texto, (10, y_hab))
             y_hab += 18
 
         if self.habilidad_5_tiene:
             if self.jugador.habilidad_activa and self.jugador.habilidad_tipo == 5:
                 resto = (self.jugador.tiempo_habilidad + 59) // 60
-                texto = fuente_pequena.render(f"X=MISILES {resto}s", True, (0, 200, 255))
+                texto = fuente_pequena.render(f"5=MISILES {resto}s", True, (0, 200, 255))
             elif self.habilidad_5_lista:
-                texto = fuente_pequena.render("X=MISILES [LISTA]", True, VERDE)
+                texto = fuente_pequena.render("5=MISILES [LISTA]", True, VERDE)
             else:
                 pct = min(100, (self.puntuacion - self.habilidad_5_puntos_base) * 100 // 2000)
-                texto = fuente_pequena.render(f"X=MISILES {pct}%", True, (150, 150, 150))
+                texto = fuente_pequena.render(f"5=MISILES {pct}%", True, (150, 150, 150))
             self.pantalla.blit(texto, (10, y_hab))
             y_hab += 18
 
         if self.habilidad_6_tiene:
             if self.habilidad_6_lista:
-                texto = fuente_pequena.render("V=TELEPORT [LISTA]", True, VERDE)
+                texto = fuente_pequena.render("6=TELEPORT [LISTA]", True, VERDE)
             else:
                 pct = min(100, (self.puntuacion - self.habilidad_6_puntos_base) * 100 // 2000)
-                texto = fuente_pequena.render(f"V=TELEPORT {pct}%", True, (150, 150, 150))
+                texto = fuente_pequena.render(f"6=TELEPORT {pct}%", True, (150, 150, 150))
             self.pantalla.blit(texto, (10, y_hab))
             y_hab += 18
 
